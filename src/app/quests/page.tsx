@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { quests } from '@/lib/quests';
 import { useSearchParams } from 'next/navigation';
+export const dynamic = "force-dynamic";
+
 
 export default function QuestsPage() {
   const searchParams = useSearchParams();
