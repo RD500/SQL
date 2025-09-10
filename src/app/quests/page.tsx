@@ -1,6 +1,13 @@
 
-import { Suspense } from 'react';
-import QuestList from './quest-list';
+'use client';
+
+import { MainLayout } from '@/components/layout/main-layout';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
+import { quests } from '@/lib/quests';
+import { useSearchParams } from 'next/navigation';
 
 export default function QuestsPage() {
   const searchParams = useSearchParams();
