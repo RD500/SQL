@@ -1,6 +1,6 @@
-
 'use client';
 
+import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/main-layout';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,36 +8,32 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { quests } from '@/lib/quests';
 import { useSearchParams } from 'next/navigation';
+
+// Prevent Next.js from statically prerendering this page
 export const dynamic = "force-dynamic";
 
-
-export default function QuestsPage() {
+// This component contains all the client-side logic
+function QuestsContent() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search');
   const categoryQuery = searchParams.get('category');
 
-  const filteredQuests = quests.filter(quest => {
+  const filteredQuests = quests.filter((quest) => {
     const searchMatch = searchQuery
       ? quest.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         quest.description.toLowerCase().includes(searchQuery.toLowerCase())
       : true;
-    
-    const categoryMatch = categoryQuery
-      ? quest.category === categoryQuery
-      : true;
+
+    const categoryMatch = categoryQuery ? quest.category === categoryQuery : true;
 
     return searchMatch && categoryMatch;
   });
 
   const getPageTitle = () => {
-    if (categoryQuery) {
-      return `SQL Quests: ${categoryQuery}`;
-    }
-    if (searchQuery) {
-      return `Search Results for "${searchQuery}"`;
-    }
+    if (categoryQuery) return `SQL Quests: ${categoryQuery}`;
+    if (searchQuery) return `Search Results for "${searchQuery}"`;
     return 'SQL Quests';
-  }
+  };
 
   const getPageDescription = () => {
     if (categoryQuery) {
@@ -47,18 +43,16 @@ export default function QuestsPage() {
       return `Found ${filteredQuests.length} quests matching your search.`;
     }
     return 'Embark on quests to master SQL commands, constraints, and more.';
-  }
-
+  };
 
   return (
     <MainLayout>
       <div className="flex flex-col gap-4">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">{getPageTitle()}</h1>
-          <p className="text-muted-foreground">
-            {getPageDescription()}
-          </p>
+          <p className="text-muted-foreground">{getPageDescription()}</p>
         </div>
+
         {filteredQuests.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredQuests.map((quest) => (
@@ -67,8 +61,18 @@ export default function QuestsPage() {
                   <div className="flex justify-between items-start">
                     <CardTitle>{quest.title}</CardTitle>
                     <Badge
-                      variant={quest.difficulty === 'Beginner' ? 'secondary' : quest.difficulty === 'Intermediate' ? 'outline' : 'default'}
-                      className={quest.difficulty === 'Advanced' ? 'bg-primary/20 text-primary border-primary/50' : ''}
+                      variant={
+                        quest.difficulty === 'Beginner'
+                          ? 'secondary'
+                          : quest.difficulty === 'Intermediate'
+                          ? 'outline'
+                          : 'default'
+                      }
+                      className={
+                        quest.difficulty === 'Advanced'
+                          ? 'bg-primary/20 text-primary border-primary/50'
+                          : ''
+                      }
                     >
                       {quest.difficulty}
                     </Badge>
@@ -101,5 +105,14 @@ export default function QuestsPage() {
         )}
       </div>
     </MainLayout>
+  );
+}
+
+// Wrap the client-side content in Suspense
+export default function QuestsPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-10 text-gray-500">Loading quests...</div>}>
+      <QuestsContent />
+    </Suspense>
   );
 }
