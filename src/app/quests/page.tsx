@@ -1,6 +1,5 @@
 'use client';
 
-import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/main-layout';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,11 +8,11 @@ import Link from 'next/link';
 import { quests } from '@/lib/quests';
 import { useSearchParams } from 'next/navigation';
 
-// Prevent Next.js from statically prerendering this page
+// Mark this page as fully client-side, disables prerendering
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-// This component contains all the client-side logic
-function QuestsContent() {
+export default function QuestsPage() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search');
   const categoryQuery = searchParams.get('category');
@@ -105,14 +104,5 @@ function QuestsContent() {
         )}
       </div>
     </MainLayout>
-  );
-}
-
-// Wrap the client-side content in Suspense
-export default function QuestsPage() {
-  return (
-    <Suspense fallback={<div className="text-center py-10 text-gray-500">Loading quests...</div>}>
-      <QuestsContent />
-    </Suspense>
   );
 }
